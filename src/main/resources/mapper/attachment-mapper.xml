@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.worldfriends.bacha.dao.AttachmentDao">
+   <!-- SQL문과 태그를 매핑 -->
+   
+   <select id="getCount" resultType="int"><![CDATA[
+      select count(*) as total from attachments where board_id = #{boardId}
+   ]]></select>
+
+   <select id="selectList" resultType="Attachment" parameterType="int"><![CDATA[
+      select * 
+      from attachments 
+      where board_id = #{boardId}
+   ]]></select>
+
+   <select id="selectOne" resultType="Attachment" parameterType="int"><![CDATA[
+      select * from attachments
+      where attachment_id = #{attachmentId}
+   ]]></select>
+
+   <insert id="insert" parameterType="Attachment"><![CDATA[
+      insert into attachments
+      (attachment_id, file_name, location, board_id, reg_date)
+      values(attachments_seq.nextval, #{fileName}, #{location}, #{boardId}, sysdate)
+   ]]></insert>
+
+   <delete id="delete" parameterType="int"><![CDATA[
+      delete from attachments
+      where attachment_id = #{attachmentId}
+   ]]></delete>
+
+   <delete id="deleteByBoardId" parameterType="int"><![CDATA[
+      delete from attachments
+      where board_id = #{boardId}
+   ]]></delete>
+</mapper>   

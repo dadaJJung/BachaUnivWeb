@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.worldfriends.bacha.dao.StudentDao">
+   <!-- SQL문과 태그를 매핑 -->
+
+   <select id="getCount" resultType="int"><![CDATA[
+      select count(*) as total from students where student_number <> 'anonymous' and student_number <> 'admin'
+   ]]></select>
+
+   <select id="getCountByOption" resultType="int" parameterType="Options"><![CDATA[
+      select count(*) as total from students where student_number <> 'anonymous' and student_number <> 'admin' and ${keyOption} LIKE '%${keyword}%'
+   ]]></select>
+
+   <!-- 숫자로 소트할 경우 (졸업년도, 입학년도, 학번) -->
+   <select id="selectListByNumSort" resultType="Student"
+      parameterType="SortOption"><![CDATA[
+      select student_number, student_name, password, cell_phone, email, address,
+       grade, admission_year, graduation_year, major, introduction, reg_date, update_date from(
+       select row_number() over (order by ${option} desc) as seq, 
+       student_number, student_name, password, cell_phone, email, address, grade, admission_year, graduation_year, major, introduction, reg_date, update_date
+       from students where student_number <> 'anonymous' and student_number <> 'admin' and ${keyOption} LIKE '%${keyword}%') where seq between #{start} and #{end} 
+      ]]></select>
+
+
+   <!-- 알파벳으로 소트할 경우 (이름이랑,전공명) -->
+   <select id="selectListByAlphabetSort" resultType="Student"
+      parameterType="SortOption"><![CDATA[
+      select student_number, student_name, password, cell_phone, email, address,
+       grade, admission_year, graduation_year, major, introduction, reg_date, update_date from(
+       select row_number() over (order by LOWER(${option}) ) as seq, 
+       student_number, student_name, password, cell_phone, email, address, grade, admission_year, graduation_year, major, introduction, reg_date, update_date
+       from students where student_number <> 'anonymous' and student_number <> 'admin' and ${keyOption} LIKE '%${keyword}%') where seq between #{start} and #{end} 
+      ]]></select>
+
+
+   <select id="selectOne" resultType="Student" parameterType="String"><![CDATA[
+      select * from students
+      where student_number = #{studentNumber}
+   ]]></select>
+
+   <!-- CamelCase=true이므로 getcell_phone이 아니라 getCellPhone을 호출한다. -->
+   <insert id="insert" parameterType="Student"><![CDATA[
+      insert into students
+      (student_number, student_name, password, cell_phone, email, address, grade, admission_year, graduation_year, major, introduction)
+      values(#{studentNumber}, #{studentName}, #{password}, #{cellPhone}, #{email},
+      #{address}, 1, TO_DATE(#{admissionYear}, 'YYYY-MM-DD'), TO_DATE(#{graduationYear}, 'YYYY-MM-DD'), #{major}, #{introduction})
+   ]]></insert>
+
+   <update id="update" parameterType="Student"><![CDATA[
+      update students set
+      cell_phone=#{cellPhone},
+      email=#{email},
+      address=#{address},
+      introduction=#{introduction},
+      update_date = sysdate
+      where student_number=#{studentNumber} and password=#{password}
+   ]]></update>
+
+   <update id="updateByAdmin" parameterType="Student"><![CDATA[
+      update students set
+      cell_phone=#{cellPhone},
+      email=#{email},
+      address=#{address},
+      introduction=#{introduction},
+      update_date = sysdate
+      where student_number=#{studentNumber}
+   ]]></update>
+
+   <update id="changePassword" parameterType="Password"><![CDATA[
+      update students set
+      password=#{newPassword},
+      update_date = sysdate
+      where student_number=#{studentNumber} and password=#{oldPassword}
+   ]]></update>
+
+   <update id="changePasswordByAdmin" parameterType="Password"><![CDATA[
+      update students set
+      password=#{newPassword},
+      update_date = sysdate
+      where student_number=#{studentNumber}
+   ]]></update>
+
+   <delete id="delete" parameterType="String"><![CDATA[
+      delete from students
+      where student_number = #{studentNumber}
+   ]]></delete>
+
+
+
+</mapper>   

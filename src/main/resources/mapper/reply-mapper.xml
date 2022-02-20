@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.worldfriends.bacha.dao.ReplyDao">
+   <select id="getCount" parameterType="int" resultType="int">
+      SELECT count(*) FROM replies
+      WHERE board_id=#{boardId}
+   </select>
+   <select id="getCountRereply" parameterType="int" resultType="int">
+      SELECT count(*) FROM replies
+      WHERE parent=#{replyId}
+   </select>
+   <select id="selectOne" parameterType="int" resultType="Reply">
+      SELECT * FROM replies
+      WHERE reply_id=#{replyId}
+   </select>
+   <select id="selectList" parameterType="int" resultType="Reply">
+      SELECT * FROM replies
+      WHERE board_id=#{boardId}
+      ORDER BY reply_level, reg_date desc
+   </select>
+   <insert id="insert" parameterType="Reply" useGeneratedKeys="true"
+      keyColumn="reply_id" keyProperty="replyId">
+      insert into replies
+      (reply_id, board_id, reply_level, parent,
+      writer, deleted, like_cnt, content, reg_date, update_date)
+      values(REPLIES_SEQ.NEXTVAL, #{boardId}, #{replyLevel},
+      #{parent}, #{writer}, 0, 0, #{content}, sysdate, sysdate)
+   </insert>
+   <update id="update" parameterType="Reply">
+      update replies set
+      content = #{content},
+      update_date = sysdate
+      WHERE reply_id=#{replyId}
+   </update>
+   <update id="delete" parameterType="int">
+      update replies set
+      content = '삭제된 글입니다.',
+      deleted = 1,
+      update_date = sysdate
+      WHERE reply_id=#{replyId}
+   </update>
+   <update id="increaseLikeCnt" parameterType="int">
+      update replies set
+      like_cnt=like_cnt+1
+      where reply_id=#{replyId}
+   </update>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.worldfriends.bacha.dao.AvatarDao">
+	<!-- SQL문과 태그를 매핑 -->
+	
+	<select id="getCount" resultType="int"><![CDATA[
+		select count(*) as total from avatars
+	]]></select>
+
+	<select id="selectOne" resultType="Avatar" parameterType="String"><![CDATA[
+		select * from avatars
+		where student_number = #{studentNumber}
+	]]></select>
+
+	<insert id="insert" parameterType="Avatar"><![CDATA[
+		insert into avatars
+		(student_number, image)
+		values(#{studentNumber}, #{image})
+	]]></insert>
+
+	<update id="update" parameterType="Avatar"><![CDATA[
+		update avatars set
+		image = #{image}
+		where student_number=#{studentNumber}
+	]]></update>
+
+	<delete id="delete" parameterType="String"><![CDATA[
+		delete from avatars
+		where student_number = #{studentNumber}
+	]]></delete>
+
+</mapper>	
